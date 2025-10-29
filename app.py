@@ -478,11 +478,36 @@ if uploaded_file is not None:
     if not st.session_state.file_processed:
         try:
             df = pd.read_excel(uploaded_file)
-            
-            # Aggregate from DataFile
-            name_of_employer = df['TRADENAME'].unique()[0] if 'TRADENAME' in df else ''
-            uif_reg_number = df['UIFREFERENCENUMBER'].unique()[0] if 'UIFREFERENCENUMBER' in df else ''
-            industry = df['INDUSTRYSECTOR'].unique()[0] if 'INDUSTRYSECTOR' in df else ''
+
+            # Normalize headers and support common aliases
+            df_cols = {str(c).strip().upper().replace(' ', '_'): c for c in df.columns}
+            def pick_df(*aliases):
+                for a in aliases:
+                    if a in df_cols:
+                        return df_cols[a]
+                return None
+
+            name_col = pick_df('TRADENAME', 'TRADE_NAME', 'EMPLOYER_NAME', 'NAME_OF_EMPLOYER', 'NAME', 'COMPANY', 'TRADING_NAME')
+            uif_col = pick_df('UIFREFERENCENUMBER', 'UIF_REFERENCE_NUMBER', 'UIF_REF_NUMBER', 'UIF_NUMBER', 'UIFREF', 'UIF_REF', 'UIF_REG_NUMBER')
+            industry_col = pick_df('INDUSTRYSECTOR', 'INDUSTRY_SECTOR', 'INDUSTRY', 'SECTOR')
+
+            # Aggregate from DataFile using resolved columns
+            name_of_employer = ''
+            if name_col and name_col in df.columns and not df[name_col].dropna().empty:
+                name_of_employer = str(df[name_col].dropna().iloc[0])
+
+            uif_reg_number = ''
+            if uif_col and uif_col in df.columns and not df[uif_col].dropna().empty:
+                uif_reg_number = str(df[uif_col].dropna().iloc[0]).strip()
+                if uif_reg_number.endswith('.0'):
+                    try:
+                        uif_reg_number = str(int(float(uif_reg_number)))
+                    except Exception:
+                        pass
+
+            industry = ''
+            if industry_col and industry_col in df.columns and not df[industry_col].dropna().empty:
+                industry = str(df[industry_col].dropna().iloc[0])
             
             # Load address book and lookup address/province for this UIF reference number
             address_lookup = load_address_book()
@@ -558,9 +583,12 @@ if uploaded_file is not None:
                 period_claimed = ""
             
             # Financial totals - Calculate total amount verified from bank pay amounts with specific criteria
-            df['PAYMENT_ITR_1'] = pd.to_numeric(df['PAYMENT_ITR_1'], errors='coerce').fillna(0)
-            df['PAYMENT_ITR_2'] = pd.to_numeric(df['PAYMENT_ITR_2'], errors='coerce').fillna(0)
-            df['PAYMENT_ITR_3'] = pd.to_numeric(df['PAYMENT_ITR_3'], errors='coerce').fillna(0)
+            # Ensure expected numeric columns exist and are numeric
+            for col in ['PAYMENT_ITR_1', 'PAYMENT_ITR_2', 'PAYMENT_ITR_3', 'BANK_PAY_AMOUNT']:
+                if col in df.columns:
+                    df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+                else:
+                    df[col] = 0
             
             # Calculate total amount verified based on payment status and medium
             # Assuming columns exist for payment status and medium - adjust column names as needed
@@ -575,13 +603,16 @@ if uploaded_file is not None:
                     payment_medium_col = col
             
             # Calculate total amount verified based on criteria
-            if payment_status_col and payment_medium_col:
-                # Filter for payment status = 3 and payment medium = 1 or 2
-                mask = (df[payment_status_col] == 3) & (df[payment_medium_col].isin([1, 2]))
-                total_amount_verified = df.loc[mask, 'BANK_PAY_AMOUNT'].sum()
-            else:
-                # Fallback: sum all bank pay amounts
-                total_amount_verified = df['BANK_PAY_AMOUNT'].sum()
+            try:
+                if payment_status_col and payment_medium_col:
+                    # Filter for payment status = 3 and payment medium = 1 or 2
+                    mask = (df[payment_status_col] == 3) & (df[payment_medium_col].isin([1, 2]))
+                    total_amount_verified = df.loc[mask, 'BANK_PAY_AMOUNT'].sum()
+                else:
+                    # Fallback: sum all bank pay amounts
+                    total_amount_verified = df['BANK_PAY_AMOUNT'].sum()
+            except Exception:
+                total_amount_verified = 0
             
             # Round to 2 decimal places and format with R prefix
             total_amount_verified = round(total_amount_verified, 2)
