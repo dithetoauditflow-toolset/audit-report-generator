@@ -1,15 +1,28 @@
 import streamlit as st
 from utils.report_generator import ReportGenerator
 import os
-from docxtpl import DocxTemplate
 import pandas as pd
 from datetime import datetime, timedelta
+import warnings
 from config.copy_paste_text import (
     FINDINGS, COMPLIANCE, OVERALL_OUTCOMES, VERIFICATION_SCOPES, OBJECTIVES,
     MONTHLY_AMOUNTS, UI_TEXT,
     get_finding_text, get_compliance_text, get_overall_outcome_text,
     get_verification_scope_text, get_objective_text, get_monthly_amount_helper_text,
     substitute_template_variables
+)
+
+# Suppress deprecation warning originating from docxcompose/pkg_resources
+# We don't use docxcompose directly; this avoids noisy logs in production.
+warnings.filterwarnings(
+    "ignore",
+    message=r".*pkg_resources is deprecated as an API.*",
+    category=UserWarning,
+)
+warnings.filterwarnings(
+    "ignore",
+    category=UserWarning,
+    module=r"docxcompose\..*",
 )
 
 @st.cache_data(show_spinner=False)
@@ -495,6 +508,7 @@ if uploaded_file is not None:
             name_of_employer = ''
             if name_col and name_col in df.columns and not df[name_col].dropna().empty:
                 name_of_employer = str(df[name_col].dropna().iloc[0])
+            st.sidebar.write(f"Info: Employer column detected = {name_col or 'None'}, value = '{name_of_employer}'")
 
             uif_reg_number = ''
             if uif_col and uif_col in df.columns and not df[uif_col].dropna().empty:
@@ -504,10 +518,12 @@ if uploaded_file is not None:
                         uif_reg_number = str(int(float(uif_reg_number)))
                     except Exception:
                         pass
+            st.sidebar.write(f"Info: UIF column detected = {uif_col or 'None'}, value = '{uif_reg_number}'")
 
             industry = ''
             if industry_col and industry_col in df.columns and not df[industry_col].dropna().empty:
                 industry = str(df[industry_col].dropna().iloc[0])
+            st.sidebar.write(f"Info: Industry column detected = {industry_col or 'None'}, value = '{industry}'")
             
             # Load address book and lookup address/province for this UIF reference number
             address_lookup = load_address_book()
@@ -616,6 +632,7 @@ if uploaded_file is not None:
             
             # Round to 2 decimal places and format with R prefix
             total_amount_verified = round(total_amount_verified, 2)
+            st.sidebar.write(f"Info: Total Amount Verified computed = R {total_amount_verified:.2f}")
             
             # Amount verified as accurate will be left blank for user input
             amount_verified_accurate = 0
@@ -2368,14 +2385,7 @@ if st.button("Final Submit"):
     try:
         st.subheader("Combined Data for Template")
         st.json(st.session_state.form_data)
-        
-        template = DocxTemplate(template_path)
-        template_fields = template.get_undeclared_template_variables()
-        context_keys = set(st.session_state.form_data.keys())
-        missing_fields = template_fields - context_keys
-        if missing_fields:
-            st.warning(f"Template contains fields not in context: {missing_fields}")
-        
+
         generator = ReportGenerator(template_path)
         output_path = generator.generate_report(st.session_state.form_data)
         st.session_state.output_path = output_path
