@@ -152,6 +152,8 @@ if 'monthly_payments_saved' not in st.session_state:
 # Initialize other session state variables
 if "form_data" not in st.session_state:
     st.session_state.form_data = {}
+if 'widget_version' not in st.session_state:
+    st.session_state.widget_version = 0
 if "findings" not in st.session_state:
     st.session_state.findings = [
         {
@@ -891,6 +893,9 @@ if uploaded_file is not None:
             })
             
             st.session_state.file_processed = True
+            # Bump widget version to force widget keys to refresh and take new defaults
+            st.session_state.widget_version += 1
+            st.rerun()
             st.session_state.monthly_payments_saved = False  # Reset monthly payments saved status
             # Update progress tracking after file upload
             update_completion_status()
@@ -1122,6 +1127,7 @@ def auto_calculate_financials(amount_verified_accurate):
 # SECTION 1: COMPANY DETAILS
 # ============================================================================
 st.header("Company Details")
+wv = st.session_state.get('widget_version', 0)
 st.info("**Basic company information and details about the employer applying for TERS funds.**")
 
 with st.form(key="form_company_details"):
@@ -1132,21 +1138,21 @@ with st.form(key="form_company_details"):
         name_of_employer = st.text_input(
             "Name of Employer", 
             value=st.session_state.form_data.get("Name_of_Employer", ""),
-            key="name_of_employer_input"
+            key=f"name_of_employer_input_{wv}"
         )
         
         st.markdown("📝 **UIF Registration Number** (requires input)")
         uif_reg_number = st.text_input(
             "UIF Registration Number", 
             value=st.session_state.form_data.get("UIF_REG_Number", ""),
-            key="uif_reg_number_input"
+            key=f"uif_reg_number_input_{wv}"
         )
         
         st.markdown("📝 **Period Claimed For / Lockdown Period** (requires input)")
         lockdown_period = st.text_input(
             "Period Claimed For / Lockdown Period", 
             value=st.session_state.form_data.get("Period_Claimed_For_Lockdown_Period", ""),
-            key="lockdown_period_input"
+            key=f"lockdown_period_input_{wv}"
         )
         
         # Check if address was auto-populated
@@ -1162,7 +1168,7 @@ with st.form(key="form_company_details"):
         location = st.text_input(
             "Location (Full Address)", 
             value=current_address,
-            key="location_input",
+            key=f"location_input_{wv}",
             help="This field is automatically populated from the address book when a data file is uploaded, but you can edit it if needed."
         )
     
@@ -1193,7 +1199,7 @@ with st.form(key="form_company_details"):
             "Province", 
             province_options, 
             index=province_options.index(current_province) if current_province in province_options else 0,
-            key="province_input",
+            key=f"province_input_{wv}",
             help="This field is automatically populated from the address book when a data file is uploaded, but you can edit it if needed."
         )
         
@@ -1201,14 +1207,14 @@ with st.form(key="form_company_details"):
         industry = st.text_input(
             "Industry", 
             value=st.session_state.form_data.get("Industry", ""),
-            key="industry_input"
+            key=f"industry_input_{wv}"
         )
         
         st.markdown("📝 **Number of Employees** (requires input)")
         number_of_employees = st.text_input(
             "Number of Employees", 
             value=st.session_state.form_data.get("Number_of_Employees", ""),
-            key="number_of_employees_input"
+            key=f"number_of_employees_input_{wv}"
         )
     
     col_save_company, col_indicator_company = st.columns([3, 1])
@@ -1255,21 +1261,21 @@ with st.form(key="form_financials"):
         total_amount_verified = st.text_input(
             "Total Amount Verified (e.g., R 32236.05)", 
             value=st.session_state.form_data.get("Total_Amount_Verified", ""),
-            key="total_amount_verified_input"
+            key=f"total_amount_verified_input_{wv}"
         )
         
         st.markdown("📝 **Amount Verified as Accurate** (requires input)")
         amount_verified_accurate = st.text_input(
             "Amount Verified as Accurate (Sum of Monthly Amounts Paid)", 
             value=st.session_state.form_data.get("Amount_Verified_as_Accurate", ""),
-            key="amount_verified_accurate_input"
+            key=f"amount_verified_accurate_input_{wv}"
         )
         
         st.markdown("📝 **Affected Employees** (requires input)")
         affected_employees = st.text_input(
             "Affected Employees (for underpayments)", 
             value=st.session_state.form_data.get("Affected_Employees", ""),
-            key="affected_employees_input"
+            key=f"affected_employees_input_{wv}"
         )
     
     with col2:
@@ -1278,7 +1284,7 @@ with st.form(key="form_financials"):
             "Amount Not Disbursed", 
             value=st.session_state.form_data.get("Amount_not_Disbursed", ""),
             disabled=True,
-            key="amount_not_disbursed_input"
+            key=f"amount_not_disbursed_input_{wv}"
         )
         
         # Show calculation status
@@ -1290,7 +1296,7 @@ with st.form(key="form_financials"):
             "Verified Percentage", 
             value=st.session_state.form_data.get("Verified_Percentage", ""),
             disabled=True,
-            key="verified_percentage_input"
+            key=f"verified_percentage_input_{wv}"
         )
         
         # Show calculation status
