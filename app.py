@@ -12,24 +12,76 @@ from config.copy_paste_text import (
     substitute_template_variables
 )
 
+@st.cache_data(show_spinner=False)
 def load_address_book():
     """Load the combined address book and return a lookup dictionary"""
     try:
-        address_book_path = os.path.join("data", "Combined_Address_Book.xlsx")
-        if os.path.exists(address_book_path):
-            df = pd.read_excel(address_book_path)
-            # Create lookup dictionary: UIFREFERENCENUMBER -> (ADDRESS, PROVINCE)
-            address_lookup = {}
-            for _, row in df.iterrows():
-                uif_ref = str(row['UIFREFERENCENUMBER']).strip() if pd.notna(row['UIFREFERENCENUMBER']) else ""
-                address = str(row['ADDRESS']).strip() if pd.notna(row['ADDRESS']) else ""
-                province = str(row['PROVINCE']).strip() if pd.notna(row['PROVINCE']) else ""
-                if uif_ref:
-                    address_lookup[uif_ref] = (address, province)
-            return address_lookup
-        else:
-            st.sidebar.warning("Address book file not found at data/Combined_Address_Book.xlsx")
+        # Resolve path from ENV or common filename variants to survive case-sensitive prod
+        env_path = os.environ.get("ADDRESS_BOOK_PATH")
+        candidate_paths = []
+        if env_path:
+            candidate_paths.append(env_path)
+        candidate_paths += [
+            os.path.join("data", "combined_address_book.xlsx"),
+            os.path.join("data", "Combined_Address_Book.xlsx"),
+            os.path.join("data", "COMBINED_ADDRESS_BOOK.xlsx"),
+        ]
+
+        resolved_path = None
+        for p in candidate_paths:
+            if os.path.exists(p):
+                resolved_path = p
+                break
+
+        if not resolved_path:
+            st.sidebar.info("Address book not found. Continuing without address enrichment.")
             return {}
+
+        df = pd.read_excel(resolved_path)
+
+        # Normalize column names and support common aliases
+        col_map = {str(c).strip().upper().replace(" ", "_"): c for c in df.columns}
+
+        def pick(*aliases):
+            for a in aliases:
+                if a in col_map:
+                    return col_map[a]
+            return None
+
+        uif_col = pick("UIFREFERENCENUMBER", "UIF_REFERENCE_NUMBER", "UIF_REF_NUMBER", "UIF_NUMBER", "UIFREF", "UIF_REF")
+        addr_col = pick("ADDRESS", "ADDRESS_LINE", "ADDRESS1", "LOCATION", "ADDRESS_IN_FULL")
+        prov_col = pick("PROVINCE", "PROV", "STATE")
+
+        if not uif_col:
+            st.sidebar.warning("Address book loaded but UIF reference column was not found. Skipping address enrichment.")
+            return {}
+
+        # Create lookup dictionary: UIF -> (ADDRESS, PROVINCE)
+        address_lookup = {}
+        for _, row in df.iterrows():
+            uif_val = row[uif_col]
+            if pd.isna(uif_val):
+                continue
+            key = str(uif_val).strip()
+            # Tolerate Excel numeric-like strings such as '123.0'
+            if key.endswith('.0'):
+                try:
+                    key = str(int(float(key)))
+                except Exception:
+                    pass
+
+            addr_val = ""
+            if addr_col and addr_col in df.columns and pd.notna(row.get(addr_col)):
+                addr_val = str(row.get(addr_col)).strip()
+
+            prov_val = ""
+            if prov_col and prov_col in df.columns and pd.notna(row.get(prov_col)):
+                prov_val = str(row.get(prov_col)).strip()
+
+            if key:
+                address_lookup[key] = (addr_val, prov_val)
+
+        return address_lookup
     except Exception as e:
         st.sidebar.error(f"Error loading address book: {str(e)}")
         return {}
@@ -38,8 +90,13 @@ def get_address_from_uif(uif_ref_number, address_lookup):
     """Get address and province for a given UIF reference number"""
     if not uif_ref_number or not address_lookup:
         return "", ""
-    
+
     uif_ref_clean = str(uif_ref_number).strip()
+    if uif_ref_clean.endswith('.0'):
+        try:
+            uif_ref_clean = str(int(float(uif_ref_clean)))
+        except Exception:
+            pass
     return address_lookup.get(uif_ref_clean, ("", ""))
 
 # Simple Streamlit app without custom CSS
