@@ -966,32 +966,49 @@ if st.sidebar.button("Clear Form"):
 def add_main_findings_positive():
     """Add positive finding (underpayments) - replaces existing content with single finding"""
     st.session_state.button_data["main_findings"] = get_finding_text("main_findings", "finding_1", st.session_state.form_data)
+    # Sync widget state so text_area reflects programmatic change
+    st.session_state["main_findings_input"] = st.session_state.button_data["main_findings"]
+    st.rerun()
 
 def add_main_findings_negative():
     """Add negative finding (ineligible employees) - replaces existing content with single finding"""
     st.session_state.button_data["main_findings"] = get_finding_text("main_findings", "finding_2", st.session_state.form_data)
+    st.session_state["main_findings_input"] = st.session_state.button_data["main_findings"]
+    st.rerun()
 
 def add_limitation_1():
     st.session_state.button_data["limitation_of_scope"] += get_finding_text("limitations", "limitation_1") + "\n"
+    st.session_state["limitation_input"] = st.session_state.button_data["limitation_of_scope"]
+    st.rerun()
 
 def add_limitation_2():
     st.session_state.button_data["limitation_of_scope"] += get_finding_text("limitations", "limitation_2") + "\n"
+    st.session_state["limitation_input"] = st.session_state.button_data["limitation_of_scope"]
+    st.rerun()
 
 def add_limitation_3():
     st.session_state.button_data["limitation_of_scope"] += get_finding_text("limitations", "limitation_3") + "\n"
+    st.session_state["limitation_input"] = st.session_state.button_data["limitation_of_scope"]
+    st.rerun()
 
 def add_limitation_4():
     st.session_state.button_data["limitation_of_scope"] += get_finding_text("limitations", "limitation_4") + "\n"
+    st.session_state["limitation_input"] = st.session_state.button_data["limitation_of_scope"]
+    st.rerun()
 
 def add_compliance_yes():
     st.session_state.button_data["compliance_comments"] += get_compliance_text("ui_act_compliance", "yes") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["compliance_input"] = st.session_state.button_data["compliance_comments"]
+    st.rerun()
 
 def add_compliance_no():
     st.session_state.button_data["compliance_comments"] += get_compliance_text("ui_act_compliance", "no") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["compliance_input"] = st.session_state.button_data["compliance_comments"]
+    st.rerun()
 
 def add_overall_outcomes_positive():
     st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("positive", "payment_accuracy", st.session_state.form_data) + "\n"
@@ -999,6 +1016,8 @@ def add_overall_outcomes_positive():
     st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("positive", "documentation", st.session_state.form_data) + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
+    st.rerun()
 
 def add_overall_outcomes_negative():
     st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("negative", "payment_accuracy", st.session_state.form_data) + "\n"
@@ -1006,6 +1025,8 @@ def add_overall_outcomes_negative():
     st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("negative", "documentation", st.session_state.form_data) + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
+    st.rerun()
 
 def refresh_overall_outcomes():
     """Refresh the overall outcomes text with current form data for template variable substitution"""
@@ -1029,61 +1050,85 @@ def add_claims_validity_yes():
     st.session_state.button_data["claims_validity_scope"] += get_verification_scope_text("claims_validity", "yes", form_data=st.session_state.form_data) + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["claims_validity_input"] = st.session_state.button_data["claims_validity_scope"]
+    st.rerun()
 
 def add_claims_validity_no():
     st.session_state.button_data["claims_validity_scope"] += get_verification_scope_text("claims_validity", "no", form_data=st.session_state.form_data) + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["claims_validity_input"] = st.session_state.button_data["claims_validity_scope"]
+    st.rerun()
 
 def add_objective_1_yes():
     st.session_state.button_data["objective_1_comment"] += get_objective_text("objective_1_employer_exists", "yes") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_1_input"] = st.session_state.button_data["objective_1_comment"]
+    st.rerun()
 
 def add_objective_1_no():
     st.session_state.button_data["objective_1_comment"] += get_objective_text("objective_1_employer_exists", "no") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_1_input"] = st.session_state.button_data["objective_1_comment"]
+    st.rerun()
 
 def add_objective_2_yes():
     st.session_state.button_data["objective_2_comment"] += get_objective_text("objective_2_employee_validity", "yes") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_2_input"] = st.session_state.button_data["objective_2_comment"]
+    st.rerun()
 
 def add_objective_2_no():
     st.session_state.button_data["objective_2_comment"] += get_objective_text("objective_2_employee_validity", "no") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_2_input"] = st.session_state.button_data["objective_2_comment"]
+    st.rerun()
 
 def add_objective_3_yes():
     st.session_state.button_data["objective_3_comment"] += get_objective_text("objective_3_payment_accuracy", "yes") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_3_input"] = st.session_state.button_data["objective_3_comment"]
+    st.rerun()
 
 def add_objective_3_no():
     st.session_state.button_data["objective_3_comment"] += get_objective_text("objective_3_payment_accuracy", "no") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_3_input"] = st.session_state.button_data["objective_3_comment"]
+    st.rerun()
 
 def add_objective_4_yes():
     st.session_state.button_data["objective_4_comment"] += get_objective_text("objective_4_funds_reached_beneficiaries", "yes") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_4_input"] = st.session_state.button_data["objective_4_comment"]
+    st.rerun()
 
 def add_objective_4_no():
     st.session_state.button_data["objective_4_comment"] += get_objective_text("objective_4_funds_reached_beneficiaries", "no") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_4_input"] = st.session_state.button_data["objective_4_comment"]
+    st.rerun()
 
 def add_objective_5_yes():
     st.session_state.button_data["objective_5_comment"] += get_objective_text("objective_5_information_validity", "yes") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_5_input"] = st.session_state.button_data["objective_5_comment"]
+    st.rerun()
 
 def add_objective_5_no():
     st.session_state.button_data["objective_5_comment"] += get_objective_text("objective_5_information_validity", "no") + "\n"
     # Update progress tracking
     update_completion_status()
+    st.session_state["objective_5_input"] = st.session_state.button_data["objective_5_comment"]
+    st.rerun()
 
 # Function to auto-calculate financial fields (from original app.py)
 def auto_calculate_financials(amount_verified_accurate):
@@ -1853,10 +1898,14 @@ with col10:
         st.session_state.button_data["payment_verification_scope"] += get_verification_scope_text("payment_verification", "yes", 0, st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["payment_verification_input"] = st.session_state.button_data["payment_verification_scope"]
+        st.rerun()
     if st.button("✅ Correctly Disbursed", key="pay_ver_yes_2", use_container_width=True):
         st.session_state.button_data["payment_verification_scope"] += get_verification_scope_text("payment_verification", "yes", 1, st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["payment_verification_input"] = st.session_state.button_data["payment_verification_scope"]
+        st.rerun()
 
 with col11:
     st.write("**Negative Comments:**")
@@ -1864,10 +1913,14 @@ with col11:
         st.session_state.button_data["payment_verification_scope"] += get_verification_scope_text("payment_verification", "no", 0, st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["payment_verification_input"] = st.session_state.button_data["payment_verification_scope"]
+        st.rerun()
     if st.button("❌ Incorrectly Disbursed", key="pay_ver_no_2", use_container_width=True):
         st.session_state.button_data["payment_verification_scope"] += get_verification_scope_text("payment_verification", "no", 1, st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["payment_verification_input"] = st.session_state.button_data["payment_verification_scope"]
+        st.rerun()
 
 with st.form(key="form_payment_verification"):
     st.session_state.button_data["payment_verification_scope"] = st.text_area(
@@ -1907,10 +1960,14 @@ with col14:
         st.session_state.button_data["employment_verification_scope"] += get_verification_scope_text("employment_verification", "yes", 0, st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["employment_verification_input"] = st.session_state.button_data["employment_verification_scope"]
+        st.rerun()
     if st.button("✅ Pre-Lockdown Verified", key="emp_ver_yes_2", use_container_width=True):
         st.session_state.button_data["employment_verification_scope"] += get_verification_scope_text("employment_verification", "yes", 1, st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["employment_verification_input"] = st.session_state.button_data["employment_verification_scope"]
+        st.rerun()
 
 with col15:
     st.write("**Negative Comments:**")
@@ -1918,10 +1975,14 @@ with col15:
         st.session_state.button_data["employment_verification_scope"] += get_verification_scope_text("employment_verification", "no", 0, st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["employment_verification_input"] = st.session_state.button_data["employment_verification_scope"]
+        st.rerun()
     if st.button("❌ Pre-Lockdown Not Verified", key="emp_ver_no_2", use_container_width=True):
         st.session_state.button_data["employment_verification_scope"] += get_verification_scope_text("employment_verification", "no", 1, st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["employment_verification_input"] = st.session_state.button_data["employment_verification_scope"]
+        st.rerun()
 
 with st.form(key="form_employment_verification"):
     st.session_state.button_data["employment_verification_scope"] = st.text_area(
@@ -2199,16 +2260,22 @@ with col8:
         st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("positive", "payment_accuracy", st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
+        st.rerun()
     
     if st.button("✅ Employment Verification - Positive", key="outcomes_employment_pos", use_container_width=True):
         st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("positive", "employment_verification", st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
+        st.rerun()
     
     if st.button("✅ Documentation - Positive", key="outcomes_documentation_pos", use_container_width=True):
         st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("positive", "documentation", st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
+        st.rerun()
 
 with col9:
     st.write("**Negative Outcomes:**")
@@ -2216,16 +2283,22 @@ with col9:
         st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("negative", "payment_accuracy", st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
+        st.rerun()
     
     if st.button("❌ Employment Verification - Negative", key="outcomes_employment_neg", use_container_width=True):
         st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("negative", "employment_verification", st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
+        st.rerun()
     
     if st.button("❌ Documentation - Negative", key="outcomes_documentation_neg", use_container_width=True):
         st.session_state.button_data["overall_outcomes"] += get_overall_outcome_text("negative", "documentation", st.session_state.form_data) + "\n"
         # Update progress tracking
         update_completion_status()
+        st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
+        st.rerun()
 
 with st.form(key="form_overall_outcomes"):
     st.session_state.button_data["overall_outcomes"] = st.text_area(
