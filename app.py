@@ -1129,6 +1129,10 @@ def add_objective_5_no():
     update_completion_status()
     st.session_state["objective_5_input"] = st.session_state.button_data["objective_5_comment"]
     st.rerun()
+    # Update progress tracking
+    update_completion_status()
+    st.session_state["objective_5_input"] = st.session_state.button_data["objective_5_comment"]
+    st.rerun()
 
 # Function to auto-calculate financial fields (from original app.py)
 def auto_calculate_financials(amount_verified_accurate):
@@ -1586,10 +1590,11 @@ with col2:
         update_completion_status()
 
 with st.form(key="form_main_findings"):
+    if "main_findings_input" not in st.session_state:
+        st.session_state["main_findings_input"] = st.session_state.button_data["main_findings"]
     st.session_state.button_data["main_findings"] = st.text_area(
-        "Edit Main Findings", 
-        value=st.session_state.button_data["main_findings"], 
-        height=120, 
+        "Edit Main Findings",
+        height=120,
         key="main_findings_input",
         placeholder="Enter your main findings here..."
     )
@@ -1640,10 +1645,11 @@ with col6:
         update_completion_status()
 
 with st.form(key="form_limitation"):
+    if "limitation_input" not in st.session_state:
+        st.session_state["limitation_input"] = st.session_state.button_data["limitation_of_scope"]
     st.session_state.button_data["limitation_of_scope"] = st.text_area(
-        "Edit Limitation of Scope", 
-        value=st.session_state.button_data["limitation_of_scope"], 
-        height=120, 
+        "Edit Limitation of Scope",
+        height=120,
         key="limitation_input",
         placeholder="Enter limitations of scope here..."
     )
@@ -1815,10 +1821,11 @@ with col7:
         add_compliance_no()
 
 with st.form(key="form_compliance"):
+    if "compliance_input" not in st.session_state:
+        st.session_state["compliance_input"] = st.session_state.button_data["compliance_comments"]
     st.session_state.button_data["compliance_comments"] = st.text_area(
-        "Edit Compliance Comments", 
-        value=st.session_state.button_data["compliance_comments"], 
-        height=120, 
+        "Edit Compliance Comments",
+        height=120,
         key="compliance_input",
         placeholder="Enter compliance comments here..."
     )
@@ -1923,10 +1930,11 @@ with col11:
         st.rerun()
 
 with st.form(key="form_payment_verification"):
+    if "payment_verification_input" not in st.session_state:
+        st.session_state["payment_verification_input"] = st.session_state.button_data["payment_verification_scope"]
     st.session_state.button_data["payment_verification_scope"] = st.text_area(
-        "Edit Payment Verification Scope", 
-        value=st.session_state.button_data["payment_verification_scope"], 
-        height=120, 
+        "Edit Payment Verification Scope",
+        height=120,
         key="payment_verification_input",
         placeholder="Enter payment verification scope here..."
     )
@@ -1985,10 +1993,11 @@ with col15:
         st.rerun()
 
 with st.form(key="form_employment_verification"):
+    if "employment_verification_input" not in st.session_state:
+        st.session_state["employment_verification_input"] = st.session_state.button_data["employment_verification_scope"]
     st.session_state.button_data["employment_verification_scope"] = st.text_area(
-        "Edit Employment Verification Scope", 
-        value=st.session_state.button_data["employment_verification_scope"], 
-        height=120, 
+        "Edit Employment Verification Scope",
+        height=120,
         key="employment_verification_input",
         placeholder="Enter employment verification scope here..."
     )
@@ -2023,10 +2032,11 @@ with col15:
         add_claims_validity_no()
 
 with st.form(key="form_claims_validity"):
+    if "claims_validity_input" not in st.session_state:
+        st.session_state["claims_validity_input"] = st.session_state.button_data["claims_validity_scope"]
     st.session_state.button_data["claims_validity_scope"] = st.text_area(
-        "Edit Claims Validity Scope", 
-        value=st.session_state.button_data["claims_validity_scope"], 
-        height=120, 
+        "Edit Claims Validity Scope",
+        height=120,
         key="claims_validity_input",
         placeholder="Enter claims validity scope here..."
     )
@@ -2061,10 +2071,11 @@ with col17:
         add_objective_1_no()
 
 with st.form(key="form_objective_1"):
+    if "objective_1_input" not in st.session_state:
+        st.session_state["objective_1_input"] = st.session_state.button_data["objective_1_comment"]
     st.session_state.button_data["objective_1_comment"] = st.text_area(
-        "Edit Objective 1 Comment", 
-        value=st.session_state.button_data["objective_1_comment"], 
-        height=120, 
+        "Edit Objective 1 Comment",
+        height=120,
         key="objective_1_input",
         placeholder="Enter Objective 1 comment here..."
     )
@@ -2099,10 +2110,11 @@ with col19:
         add_objective_2_no()
 
 with st.form(key="form_objective_2"):
+    if "objective_2_input" not in st.session_state:
+        st.session_state["objective_2_input"] = st.session_state.button_data["objective_2_comment"]
     st.session_state.button_data["objective_2_comment"] = st.text_area(
-        "Edit Objective 2 Comment", 
-        value=st.session_state.button_data["objective_2_comment"], 
-        height=120, 
+        "Edit Objective 2 Comment",
+        height=120,
         key="objective_2_input",
         placeholder="Enter Objective 2 comment here..."
     )
@@ -2137,10 +2149,11 @@ with col21:
         add_objective_3_no()
 
 with st.form(key="form_objective_3"):
+    if "objective_3_input" not in st.session_state:
+        st.session_state["objective_3_input"] = st.session_state.button_data["objective_3_comment"]
     st.session_state.button_data["objective_3_comment"] = st.text_area(
-        "Edit Objective 3 Comment", 
-        value=st.session_state.button_data["objective_3_comment"], 
-        height=120, 
+        "Edit Objective 3 Comment",
+        height=120,
         key="objective_3_input",
         placeholder="Enter Objective 3 comment here..."
     )
@@ -2175,10 +2188,11 @@ with col23:
         add_objective_4_no()
 
 with st.form(key="form_objective_4"):
+    if "objective_4_input" not in st.session_state:
+        st.session_state["objective_4_input"] = st.session_state.button_data["objective_4_comment"]
     st.session_state.button_data["objective_4_comment"] = st.text_area(
-        "Edit Objective 4 Comment", 
-        value=st.session_state.button_data["objective_4_comment"], 
-        height=120, 
+        "Edit Objective 4 Comment",
+        height=120,
         key="objective_4_input",
         placeholder="Enter Objective 4 comment here..."
     )
@@ -2213,10 +2227,11 @@ with col25:
         add_objective_5_no()
 
 with st.form(key="form_objective_5"):
+    if "objective_5_input" not in st.session_state:
+        st.session_state["objective_5_input"] = st.session_state.button_data["objective_5_comment"]
     st.session_state.button_data["objective_5_comment"] = st.text_area(
-        "Edit Objective 5 Comment", 
-        value=st.session_state.button_data["objective_5_comment"], 
-        height=120, 
+        "Edit Objective 5 Comment",
+        height=120,
         key="objective_5_input",
         placeholder="Enter Objective 5 comment here..."
     )
@@ -2301,10 +2316,11 @@ with col9:
         st.rerun()
 
 with st.form(key="form_overall_outcomes"):
+    if "overall_outcomes_input" not in st.session_state:
+        st.session_state["overall_outcomes_input"] = st.session_state.button_data["overall_outcomes"]
     st.session_state.button_data["overall_outcomes"] = st.text_area(
-        "Edit Overall Outcomes", 
-        value=st.session_state.button_data["overall_outcomes"], 
-        height=120, 
+        "Edit Overall Outcomes",
+        height=120,
         key="overall_outcomes_input",
         placeholder="Enter overall outcomes here..."
     )
